@@ -1,53 +1,48 @@
-import { redirect } from '@sveltejs/kit';
+import { fail, json, redirect } from '@sveltejs/kit';
 
-// In-memory store for active sessions
-const sessionStore = new Map();
+const db = {
+	getUser: async (username: string) => {
+		const listUser = [
+			{
+				username: "raditsan",
+				password: "123456"
+			}
+		]
 
-// Function to generate a random session ID
-function generateSessionId() {
-	return Math.random().toString(36).substring(2) + Date.now().toString(36);
+		return listUser.find(e => e.username == username)
+	}
 }
 
-// Load function to check if the user is authenticated
-export const load = ({ cookies }) => {
-	const sessionId = cookies.get('session_id');
-	const session = sessionStore.get(sessionId);
-	return { isLoggedIn: !!session };
-};
-
-// Server actions to handle form submissions
-export const actions = {
-	login: async ({ request, cookies }) => {
-		const formData = await request.formData();
-		const username = formData.get('username');
-		const password = formData.get('password');
-
-		// Replace this with your actual authentication logic
-		const isValidUser = username === 'user' && password === 'password';
-
-		if (!isValidUser) {
-			return { error: 'Invalid credentials', username };
+export async function load({ cookies, url }) {
+	if (!cookies.get('sessionid')) {
+		return {
+			loginProfile: null
 		}
+	}
 
-		// Generate a session ID and store it in memory
-		const sessionId = generateSessionId();
-		sessionStore.set(sessionId, { username });
+	return {
+		loginProfile: {
+			name: cookies.get('sessionid'),
+			time: cookies.get('sessiontime'),
+		}
+	}
+}
 
-		// Set a session cookie without an expiration time
-		cookies.set('session_id', sessionId, {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'strict',
-			secure: process.env.NODE_ENV === 'production' // Only send cookies over HTTPS in production
-		});
 
-		// Redirect to root to refresh page with logged-in state
-		throw redirect(303, '/');
-	},
-
-	logout: ({ cookies }) => {
-		// Clear the session cookie
-		cookies.delete('session', { path: '/' });
-		throw redirect(303, '/');
+/** @type {import('./$types').Actions} */
+export const actions = {
+	default: async ({ request }) => {
+		const data = await request.formData();
+		const username = data.get('username');
+		const password = data.get('password');
+		if (!username) {
+			return fail(400, { username, missing: true });
+		}
+		const user = await db.getUser(`${username}`);
+		if (!user || user.password !== password) {
+			return fail(400, { username, incorrect: true });
+		}
+		
+		return {success: true};
 	}
 };
