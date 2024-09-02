@@ -1,4 +1,4 @@
-import { fail, json, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 const hash = (s: string) =>
 	s.split('').reduce((a: number, b: string) => {
