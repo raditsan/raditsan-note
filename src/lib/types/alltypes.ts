@@ -10,4 +10,6 @@ export interface Note {
 	lang: string;
 	category: string;
 	created_date: string;
+	
+	isShowDetail?: boolean;
 }

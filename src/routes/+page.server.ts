@@ -1,11 +1,17 @@
 import { fail, json, redirect } from '@sveltejs/kit';
 
+const hash = (s: string) =>
+	s.split('').reduce((a: number, b: string) => {
+		a = (a << 5) - a + b.charCodeAt(0)
+		return a & a
+	}, 0)
+
 const db = {
 	getUser: async (username: string) => {
 		const listUser = [
 			{
 				username: "raditsan",
-				password: "123456"
+				password: -178432948 //P@ssw0rd#224
 			}
 		]
 
@@ -13,17 +19,11 @@ const db = {
 	}
 }
 
+/** @type {import('./$types').PageServerLoad} */
 export async function load({ cookies, url }) {
-	if (!cookies.get('sessionid')) {
-		return {
-			loginProfile: null
-		}
-	}
-
 	return {
 		loginProfile: {
-			name: cookies.get('sessionid'),
-			time: cookies.get('sessiontime'),
+			name: ""
 		}
 	}
 }
@@ -39,7 +39,7 @@ export const actions = {
 			return fail(400, { username, missing: true });
 		}
 		const user = await db.getUser(`${username}`);
-		if (!user || user.password !== password) {
+		if (!user || user.password !== hash(password as string)) {
 			return fail(400, { username, incorrect: true });
 		}
 		

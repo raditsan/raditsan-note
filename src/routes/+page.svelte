@@ -12,6 +12,7 @@
 	import type {ActionData } from './$types';
 	export let form: ActionData;
 	$: isLogin = form?.success || false
+	$: isShowAllDetailNote = false
 
 	const fetchGetNote = new Fetcher<ApiResponse<Note[]>>({
 		url: '/api/note',
@@ -114,20 +115,48 @@
 			selectedNote = result.data
 		}
 	}
+	
+	async function showDetailNote(id: string) {
+		const index = notes.findIndex((el) => el.id == id)
+		notes[index].isShowDetail = !notes[index].isShowDetail
+		storeGetNote.update((state) => ({
+			...state,
+			data: {
+				...state.data,
+				data: notes
+			} as ApiResponse<Note[]>
+		}))
+	}
+	
+	async function showAllDetailNote() {
+		isShowAllDetailNote = !isShowAllDetailNote
+		storeGetNote.update((state) => ({
+			...state,
+			data: {
+				...state.data,
+				data: notes.map((el) => {
+					el.isShowDetail = isShowAllDetailNote
+					return el
+				})
+			} as ApiResponse<Note[]>
+		}))
+	}
 </script>
 
 {#if isLogin}
 	<div>
 		<button on:click={() => isShowModalCreate = true}>Create New</button>
 		<button on:click={getAction}>Refresh</button>
+		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Deetail</button>
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
 			<p>Error: {$storeGetNote.errorMessage}</p>
 		{:else}
-			{#each notes as { id, name, created_date }, i (id)}
+			{#each notes as { id, name, created_date, content, isShowDetail }, i (id)}
 				<div>
 					<div>{i + 1}). {name}
+						<button on:click={() => showDetailNote(id)}> {isShowDetail ? 'Hide' : 'Show'} Detail</button> |
 						<button on:click={() => getDetailAction(id)}>Edit</button> |
 						<ButtonDelete
 							bind:id={id}
@@ -143,6 +172,9 @@
 						/>
 					</div>
 					<div>{created_date}</div>
+					{#if isShowDetail}
+						<div>{content}</div>
+					{/if}
 					<hr />
 				</div>
 			{/each}
