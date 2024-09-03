@@ -2,8 +2,9 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { createPool, VercelPool } from '@vercel/postgres';
 import { POSTGRES_URL } from '$env/static/private';
+import { decrypt } from '$lib/utils/utils';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	let db: VercelPool | null = null
 	try {
 		const data = await request.json()
@@ -11,13 +12,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Execute the INSERT query and return the inserted row using RETURNING
 		const addUser = await db.query(
 			`
-      INSERT INTO tbl_notes ("name", "content", category_name, lang)
-      VALUES ($1, $2, 'CODE', 'SWIFT')
+      INSERT INTO tbl_notes ("name", "content", category_name, lang, created_by)
+      VALUES ($1, $2, 'CODE', 'SWIFT', $3)
       RETURNING *; -- This returns the inserted row
     `,
-			[data.name, data.content]
+			[data.name, data.content, locals.username]
 		);
-		console.log("addUser", addUser)
 		// Check if the row was successfully inserted
 		if (addUser.rowCount === 1) {
 			// Return the inserted data in the response
@@ -37,11 +37,14 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const GET: RequestHandler = async ({ request }) => {
+export const GET: RequestHandler = async ({ request, cookies, locals }) => {
 	let db: VercelPool | null = null
 	try {
 		db = createPool({ connectionString: POSTGRES_URL })
-		const {rows} = await db.query(`SELECT * from tbl_notes ORDER BY created_date DESC`)
+		const {rows} = await db.query(
+			`SELECT * from tbl_notes where created_by = $1 ORDER BY created_date DESC`,
+			[locals.username]
+		)
 		return json({ success: true, data: rows }, { status: 200 });
 	} catch (error: unknown) {
 		// Handle errors by returning a response with an error message

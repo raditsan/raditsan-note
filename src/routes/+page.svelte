@@ -1,19 +1,21 @@
 <script lang="ts">
 	import { Fetcher, type FetchResult } from '$lib/utils/fetcher';
 	import type { ApiResponse, Note } from '$lib/types/alltypes';
-	import { onMount } from 'svelte';
 	import ButtonDelete from '../components/ButtonDelete.svelte';
 	import Modal from '../components/Modal.svelte';
-	
-	onMount(() => {
-		getAction()
-	})
-
 	import type {ActionData } from './$types';
+	import { onMount } from 'svelte';
+	
 	export let form: ActionData;
 	$: isLogin = form?.success || false
 	$: isShowAllDetailNote = false
 
+	onMount(() => {
+		if (isLogin) {
+			getAction()
+		}
+	})
+	
 	const fetchGetNote = new Fetcher<ApiResponse<Note[]>>({
 		url: '/api/note',
 		method: 'GET',
@@ -142,9 +144,10 @@
 		}))
 	}
 </script>
-
+<a href="/detail">to detail</a>
 {#if isLogin}
 	<div>
+		
 		<button on:click={() => isShowModalCreate = true}>Create New</button>
 		<button on:click={getAction}>Refresh</button>
 		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Deetail</button>

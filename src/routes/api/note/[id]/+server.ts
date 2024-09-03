@@ -8,7 +8,10 @@ export const GET: RequestHandler = async (props) => {
 	let db: VercelPool | null = null
 	try {
 		db = createPool({ connectionString: POSTGRES_URL })
-		const {rows} = await db.query(`SELECT * from tbl_notes where id='${params.id}'`)
+		const {rows} = await db.query(
+			`SELECT * from tbl_notes where id=$1`,
+			[params.id]
+		)
 		// Check if a row was found, otherwise handle the empty result
 		const data = rows[0] || null; // Use rows[0] to get the first object or null if no result
 
@@ -23,7 +26,9 @@ export const GET: RequestHandler = async (props) => {
 		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
 		return json({ success: false, error: errorMessage }, { status: 500 });
 	} finally {
-		db && await db.end()
+		if (db) {
+			await db.end()
+		}
 	}
 }
 
@@ -32,15 +37,19 @@ export const DELETE: RequestHandler = async (props) => {
 	let db: VercelPool | null = null
 	try {
 		db = createPool({ connectionString: POSTGRES_URL })
-		const result = await db.query(`DELETE from tbl_notes where id='${params.id}'`)
-		console.log("DELETE Result", result)
+		await db.query(
+			`DELETE from tbl_notes where id=$1`,
+			[params.id]
+		)
 		return json({ success: true }, { status: 200 });
 	} catch (error: unknown) {
 		// Handle errors by returning a response with an error message
 		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
 		return json({ success: false, error: errorMessage }, { status: 500 });
 	} finally {
-		db && await db.end()
+		if (db) {
+			await db.end()
+		}
 	}
 }
 
@@ -48,9 +57,12 @@ export const PUT: RequestHandler = async (props) => {
 	const { request, params } = props
 	let db: VercelPool | null = null
 	try {
-		let data = await request.json()
+		const data = await request.json()
 		db = createPool({ connectionString: POSTGRES_URL })
-		const {rows} = await db.query(`SELECT * from tbl_notes where id='${params.id}'`)
+		const {rows} = await db.query(
+			`SELECT * from tbl_notes where id=$1`,
+			[params.id]
+		)
 		if (rows.length == 0) {
 			return json({ success: false, error: 'Data not found' }, { status: 404 });
 		}
@@ -76,6 +88,8 @@ export const PUT: RequestHandler = async (props) => {
 		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
 		return json({ success: false, error: errorMessage }, { status: 500 });
 	} finally {
-		db && await db.end()
+		if (db) {
+			await db.end()
+		}
 	}
 }

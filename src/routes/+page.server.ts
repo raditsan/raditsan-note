@@ -1,10 +1,5 @@
 import { fail } from '@sveltejs/kit';
-
-const hash = (s: string) =>
-	s.split('').reduce((a: number, b: string) => {
-		a = (a << 5) - a + b.charCodeAt(0)
-		return a & a
-	}, 0)
+import { encrypt, hash } from '$lib/utils/utils';
 
 const db = {
 	getUser: async (username: string) => {
@@ -20,7 +15,8 @@ const db = {
 }
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ cookies, url }) {
+export async function load({ cookies, url, locals }) {
+	console.log("locals in load", locals)
 	return {
 		loginProfile: {
 			name: ""
@@ -31,7 +27,7 @@ export async function load({ cookies, url }) {
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, cookies }) => {
 		const data = await request.formData();
 		const username = data.get('username');
 		const password = data.get('password');
@@ -42,6 +38,15 @@ export const actions = {
 		if (!user || user.password !== hash(password as string)) {
 			return fail(400, { username, incorrect: true });
 		}
+
+		const encryptedUsername = encrypt(username as string);
+		cookies.set('session', encryptedUsername, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'strict',
+			secure: process.env.NODE_ENV === 'production',
+			maxAge: 60 * 60 * 24 // 24 hours
+		});
 		
 		return {success: true};
 	}
