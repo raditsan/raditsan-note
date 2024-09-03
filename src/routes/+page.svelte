@@ -144,7 +144,7 @@
 		}))
 	}
 </script>
-<a href="/detail">to detail</a>
+<!--<a href="/detail">to detail</a>-->
 {#if isLogin}
 	<div>
 		
