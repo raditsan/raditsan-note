@@ -13,10 +13,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const addUser = await db.query(
 			`
       INSERT INTO tbl_notes ("name", "content", category_name, lang, created_by)
-      VALUES ($1, $2, 'CODE', 'SWIFT', $3)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *; -- This returns the inserted row
     `,
-			[data.name, data.content, locals.username]
+			[
+				data.name, 
+				data.content,
+				data.category_name,
+				data.lang,
+				locals.username
+			]
 		);
 		// Check if the row was successfully inserted
 		if (addUser.rowCount === 1) {
@@ -42,7 +48,11 @@ export const GET: RequestHandler = async ({ request, cookies, locals }) => {
 	try {
 		db = createPool({ connectionString: POSTGRES_URL })
 		const {rows} = await db.query(
-			`SELECT * from tbl_notes where created_by = $1 ORDER BY created_date DESC`,
+			
+			`SELECT * from tbl_notes 
+         WHERE created_by = $1 
+         AND is_deleted = false
+         ORDER BY created_date DESC`,
 			[locals.username]
 		)
 		return json({ success: true, data: rows }, { status: 200 });

@@ -37,11 +37,29 @@ export const DELETE: RequestHandler = async (props) => {
 	let db: VercelPool | null = null
 	try {
 		db = createPool({ connectionString: POSTGRES_URL })
-		await db.query(
-			`DELETE from tbl_notes where id=$1`,
-			[params.id]
-		)
-		return json({ success: true }, { status: 200 });
+		// await db.query(
+		// 	`DELETE from tbl_notes where id=$1`,
+		// 	[params.id]
+		// )
+		// return json({ success: true }, { status: 200 });
+
+		const updateQuery = await db.query(
+			`UPDATE tbl_notes SET 
+        is_deleted=true,
+        deleted_date=CURRENT_TIMESTAMP,
+        deleted_by=$2
+        WHERE id=$1
+        RETURNING *;`,
+			[params.id, props.locals.username]
+		);
+		if (updateQuery.rowCount === 1) {
+			// Return the inserted data in the response
+			return json({ success: true, data: updateQuery.rows[0] }, { status: 200 });
+		} else {
+			// Handle cases where no rows were inserted
+			return json({ success: false, error: 'Update failed' }, { status: 400 });
+		}
+		
 	} catch (error: unknown) {
 		// Handle errors by returning a response with an error message
 		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
@@ -69,12 +87,22 @@ export const PUT: RequestHandler = async (props) => {
 		
 		const updateQuery = await db.query(
 			`UPDATE tbl_notes SET 
-      	name=$1,
-        content=$2, 
-        updated_date=CURRENT_TIMESTAMP 
-        WHERE id=$3
+      	name=$2,
+        content=$3,
+        category_name=$4, 
+        lang=$5, 
+        updated_date=CURRENT_TIMESTAMP,
+        updated_by=$6
+        WHERE id=$1
         RETURNING *;`,
-			[data.name, data.content, params.id]
+			[
+				params.id,
+				data.name, 
+				data.content,
+				data.category_name,
+				data.lang,
+				props.locals.username
+			]
 		);
 		if (updateQuery.rowCount === 1) {
 			// Return the inserted data in the response

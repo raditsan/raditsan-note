@@ -48,13 +48,15 @@
 	$: notes = ($storeGetNote.data?.data || []) as Note[]
 
 	let isShowModalCreate = false
-	let noteValue: { name: string; content: string } = {
+	const defaultNoteValue = {
 		name: '',
-		content: ''
+		content: '',
+		category_name: 'OTHER',
+		lang: 'OTHER',
 	}
+	let noteValue: { name: string; content: string, category_name: string, lang: string } = { ...defaultNoteValue }
 	$: if (!isShowModalCreate) {
-		noteValue.name = ''
-		noteValue.content = ''
+		noteValue = {...defaultNoteValue}
 		selectedNote = null
 		fetchGetNoteDetail.resetState()
 		fetchUpdateNote.resetState()
@@ -176,7 +178,7 @@
 					</div>
 					<div>{created_date}</div>
 					{#if isShowDetail}
-						<div>{content}</div>
+						<div class="note-content">{content}</div>
 					{/if}
 					<hr />
 				</div>
@@ -193,14 +195,37 @@
 			{:else if $storeUpdateNote.errorMessage}
 				<p style="color: red">{$storeUpdateNote.errorMessage}</p>
 			{:else}
-				<div class="form-group">
-					<label for="name">Name</label>
-					<input type="text" name="name" bind:value={noteValue.name} />
-				</div>
-				<div class="form-group">
-					<label for="content">Content</label>
-					<textarea name="content" bind:value={noteValue.content} />
-				</div>
+				<table>
+					<tr>
+						<td>Name</td>
+						<td><input type="text" name="name" bind:value={noteValue.name} required /></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
+					
+					
+					<tr>
+						<td>Category</td>
+						<td>
+							<select name="category" bind:value={noteValue.category_name} required>
+								<option value="CODE">CODE</option>
+								<option value="OTHER">OTHER</option>
+							</select>
+						</td>
+					</tr>
+
+					<tr>
+						<td>Lang</td>
+						<td><input type="text" name="lang" bind:value={noteValue.lang} required /></td>
+					</tr>
+
+					<tr>
+						<td>Content</td>
+						<td><textarea name="content" bind:value={noteValue.content} required /></td>
+					</tr>
+				</table>
 				<button on:click={() => {
 				if (selectedNote) {
 					updateAction()
@@ -231,4 +256,8 @@
     .error {
         color: red;
     }
+		.note-content {
+        white-space: pre;
+				background: lightgray;
+		}
 </style>
