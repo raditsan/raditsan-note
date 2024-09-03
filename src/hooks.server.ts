@@ -11,7 +11,7 @@ export async function handle({ event, resolve }) {
 			return await resolve(event);
 		} catch (e: unknown) {
 			console.error("error decrypt", e)
-			cookies.delete('session_id', { path: '/' });
+			cookies.delete('session', { path: '/' });
 		}
 	}
 
