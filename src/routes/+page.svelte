@@ -163,15 +163,18 @@
 	}
 	
 	async function showDetailNote(id: string) {
-		const index = notes.findIndex((el) => el.id == id)
-		notes[index].isShowDetail = !notes[index].isShowDetail
-		storeGetNote.update((state) => ({
-			...state,
-			data: {
-				...state.data,
-				data: notes
-			} as ApiResponse<Note[]>
-		}))
+		storeGetNote.update((state) => {
+			let notes = state.data?.data ?? []
+			const index = notes.findIndex((el) => el.id == id)
+			notes[index].isShowDetail = !notes[index].isShowDetail
+			return {
+				...state,
+				data: {
+					...state.data,
+					data: notes
+				} as ApiResponse<Note[]>
+			}
+		})
 	}
 	
 	async function showAllDetailNote() {

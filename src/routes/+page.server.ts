@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { encrypt, hash } from '$lib/utils/utils';
+import { encrypt2, hash } from '$lib/utils/utils';
 
 const db = {
 	getUser: async (username: string) => {
@@ -39,7 +39,7 @@ export const actions = {
 			return fail(400, { username, incorrect: true });
 		}
 
-		const encryptedUsername = encrypt(username as string);
+		const encryptedUsername = encrypt2(username as string);
 		cookies.set('session', encryptedUsername, {
 			path: '/',
 			httpOnly: true,

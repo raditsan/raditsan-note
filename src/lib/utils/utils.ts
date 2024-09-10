@@ -58,3 +58,27 @@ export const fakePromise = (delayInMs = 3000) => new Promise<void>((resolve, rej
 	}, delayInMs)
 })
 
+
+const ENCRYPTION_KEY2 = Buffer.from('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef', 'hex'); // 64 hex characters = 32 bytes
+const ivArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]); // 16 bytes
+// const ivString = 'abcdefghijklmnop'; // 16 characters string for IV
+// const ivFromString = Buffer.from(ivString, 'utf-8'); // Convert string to Buffer
+const iv = Buffer.from(ivArray); // Convert Uint8Array to Buffer
+
+// Function to encrypt text using a fixed key and custom IV
+export function encrypt2(fromText: string | number) {
+	const text = `${fromText}`
+	const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY2, iv);
+	let encrypted = cipher.update(text, 'utf-8', 'hex');
+	encrypted += cipher.final('hex');
+	return encrypted;
+}
+
+// Function to decrypt text using a fixed key and custom IV
+export function decrypt2(fromText: string | number) {
+	const text = `${fromText}`
+	const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY2, iv);
+	let decrypted = decipher.update(text, 'hex', 'utf-8');
+	decrypted += decipher.final('utf-8');
+	return decrypted;
+}

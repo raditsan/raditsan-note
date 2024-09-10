@@ -1,5 +1,5 @@
 // src/hooks.server.js
-import { decrypt } from '$lib/utils/utils';
+import { decrypt2 } from '$lib/utils/utils';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
@@ -7,7 +7,7 @@ export async function handle({ event, resolve }) {
 	const encryptedUsername = cookies.get('session');
 	if (encryptedUsername) {
 		try {
-			event.locals.username = decrypt(encryptedUsername); // Attach username or any other user data
+			event.locals.username = decrypt2(encryptedUsername); // Attach username or any other user data
 			return await resolve(event);
 		} catch (e: unknown) {
 			console.error("error decrypt", e)
