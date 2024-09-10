@@ -6,6 +6,6 @@
 	<title>{data.note.name}</title>
 	<meta property="description" content="{data.note.name}" />
 </svelte:head>
-<div style="white-space: none">
+<div style="white-space: pre">
 	{data.note.content}
 </div>
