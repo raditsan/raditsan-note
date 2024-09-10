@@ -8,7 +8,8 @@
 	
 	export let form: ActionData;
 	$: filter = {
-		code: "all"
+		code: "all",
+		search: ""
 	}
 	const listCode = [
 		"All",
@@ -73,10 +74,17 @@
 	$: notes = (($storeGetNote.data?.data || []) as Note[]).filter(e => {
 		const filterCode = filter.code.toLowerCase()
 		const lang = e.lang.toLowerCase()
-		if (filterCode == "all") {
-			return true;
-		}
-		return filterCode == lang
+
+		let value = ""
+		Object.keys(e).forEach((key) => {
+			if (["lang", "name", "category_name", "content"].includes(key)) {
+				value += ` ${(e as any)[key]}`
+			}
+		})
+		value = value.trim()
+		return (filterCode  == "all" ? true : 
+			filterCode == lang) &&
+			value.includes(filter.search.toLowerCase())
 	})
 
 	let isShowModalCreate = false
@@ -183,7 +191,6 @@
 <!--<a href="/detail">to detail</a>-->
 {#if isLogin}
 	<div>
-		
 		<button on:click={() => isShowModalCreate = true}>Create New</button>
 		<button on:click={getAction}>Refresh</button>
 		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Detail</button>
@@ -192,6 +199,7 @@
 				<option value="{code.toLowerCase()}">{code}</option>
 			{/each}
 		</select>
+		<input bind:value={filter.search} type="search" name="search" placeholder="Search" />
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
@@ -206,7 +214,7 @@
 					<div class="note-header">
 						<div>{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
 						<div>
-							<a href="/{id}">{name}</a>
+							<a href="/{id}" target="_blank">{name}</a>
 						</div>
 						<div>
 							<button on:click={() => showDetailNote(id)}> {isShowDetail ? 'Hide' : 'Show'} Detail</button> |
