@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 // Use a secure, random key for encryption
 const ENCRYPTION_KEY = crypto.randomBytes(32); // 32 bytes key for AES-256
+const Buffer_STATIC_ENCRYPTION_KEY = Buffer.from('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef', 'hex');;
 const IV_LENGTH = 16; // For AES, this is always 16
 
 export const hash = (s: string) =>
@@ -35,17 +36,18 @@ export function decrypt(text: string) {
 export function simpleEncrypt(fromText: string | number) {
 	const text = `${fromText}`
 	const iv = Buffer.alloc(16, 0); // Fixed IV (all zeros)
-	const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+	const cipher = crypto.createCipheriv('aes-256-cbc', Buffer_STATIC_ENCRYPTION_KEY, iv);
 	let encrypted = cipher.update(text, 'utf-8', 'hex');
 	encrypted += cipher.final('hex');
 	return encrypted; // Return only the encrypted text
 }
 
 // Function to decrypt text using a fixed IV
-export function simpleDecrypt(encryptedText) {
+export function simpleDecrypt(fromText: string | number) {
+	const text = `${fromText}`
 	const iv = Buffer.alloc(16, 0); // Fixed IV (must match the one used for encryption)
-	const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-	let decrypted = decipher.update(encryptedText, 'hex', 'utf-8');
+	const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer_STATIC_ENCRYPTION_KEY, iv);
+	let decrypted = decipher.update(text, 'hex', 'utf-8');
 	decrypted += decipher.final('utf-8');
 	return decrypted;
 }

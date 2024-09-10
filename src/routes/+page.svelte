@@ -195,7 +195,7 @@
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
-			<p>Error: {$storeGetNote.errorMessage}</p>
+			<p class="error">Error: {$storeGetNote.errorMessage}</p>
 		{:else}
 			{#if notes.length === 0}
 				<div>Empty Note</div>
@@ -293,15 +293,24 @@
 	<form method="POST">
 		{#if form?.missing}<p class="error">The username field is required</p>{/if}
 		{#if form?.incorrect}<p class="error">Invalid credentials!</p>{/if}
-		<label>
-			Username
-			<input name="username" type="text" value={form?.username ?? ''}>
-		</label>
-		<label>
-			Password
-			<input name="password" type="password">
-		</label>
-		<button>Log in</button>
+		<div id="table">
+			<div class="tr">
+				<div class="td">Username</div>
+				<div class="td"> : </div>
+				<div class="td"><input name="username" type="text" value={form?.username ?? ''}></div>
+			</div>
+			<div class="tr">
+				<div class="td">Password</div>
+				<div class="td"> : </div>
+				<div class="td"><input name="password" type="password"></div>
+			</div>
+			<div class="tr">
+				<div class="td"></div>
+				<div class="td"></div>
+				<div class="td"><button style="width: 100%">Sign In</button></div>
+			</div>
+		</div>
+		
 	</form>
 {/if}
 
@@ -329,4 +338,13 @@
 		.note-card .note-timestamp {
 				font-size: 12px;
 		}
+    #table{
+        display: table;
+				border-spacing: 5px;
+    }
+    .tr{
+        display: table-row;
+    }
+    .td{
+        display: table-cell; }
 </style>
