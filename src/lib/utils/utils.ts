@@ -32,6 +32,24 @@ export function decrypt(text: string) {
 	return decrypted.toString();
 }
 
+export function simpleEncrypt(fromText: string | number) {
+	const text = `${fromText}`
+	const iv = Buffer.alloc(16, 0); // Fixed IV (all zeros)
+	const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+	let encrypted = cipher.update(text, 'utf-8', 'hex');
+	encrypted += cipher.final('hex');
+	return encrypted; // Return only the encrypted text
+}
+
+// Function to decrypt text using a fixed IV
+export function simpleDecrypt(encryptedText) {
+	const iv = Buffer.alloc(16, 0); // Fixed IV (must match the one used for encryption)
+	const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+	let decrypted = decipher.update(encryptedText, 'hex', 'utf-8');
+	decrypted += decipher.final('utf-8');
+	return decrypted;
+}
+
 export const fakePromise = (delayInMs = 3000) => new Promise<void>((resolve, reject) => {
 	setTimeout(() => {
 		resolve()

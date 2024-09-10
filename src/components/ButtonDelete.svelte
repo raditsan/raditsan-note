@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { FetchResult } from '$lib/utils/fetcher';
 
-	export let id: string
+	export let noteId: string
 	export let onSuccess: (value: boolean) => void;
 	export let deleteFunc: (id: string) => Promise<FetchResult>;
 	
@@ -9,7 +9,7 @@
 	
 	async function deleteAction() {
 		loading = true
-		const response = await deleteFunc(id)
+		const response = await deleteFunc(noteId)
 		if (response) {
 			onSuccess(response.ok)
 		} else {

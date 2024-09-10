@@ -8,8 +8,8 @@ export interface Note {
 	name: string;
 	content: string;
 	lang: string;
-	category: string;
-	created_date: string;
+	category_name: string;
+	created_date?: string;
 	
 	isShowDetail?: boolean;
 }

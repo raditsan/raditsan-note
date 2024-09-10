@@ -7,6 +7,30 @@
 	import { onMount } from 'svelte';
 	
 	export let form: ActionData;
+	$: filter = {
+		code: "all"
+	}
+	const listCode = [
+		"All",
+		"Swift",
+		"Java",
+		"Javascript",
+		"Typescript",
+		"PHP",
+		"Svelte",
+		"C#",
+		"HTML",
+		"CSS",
+		"TEXT",
+		"ShellScript",
+		"Flutter",
+		"Dart",
+		"OTHER",
+	]
+	const listCategory = [
+		"CODE",
+		"OTHER"
+	]
 	$: isLogin = form?.success || false
 	$: isShowAllDetailNote = false
 
@@ -44,17 +68,26 @@
 		noteValue = selectedNote
 	}
 
+	
 	// let notes: [Note] = data.notes
-	$: notes = ($storeGetNote.data?.data || []) as Note[]
+	$: notes = (($storeGetNote.data?.data || []) as Note[]).filter(e => {
+		const filterCode = filter.code.toLowerCase()
+		const lang = e.lang.toLowerCase()
+		if (filterCode == "all") {
+			return true;
+		}
+		return filterCode == lang
+	})
 
 	let isShowModalCreate = false
-	const defaultNoteValue = {
+	const defaultNoteValue: Note = {
+		id: '',
 		name: '',
 		content: '',
-		category_name: 'OTHER',
-		lang: 'OTHER',
+		category_name: 'other',
+		lang: 'other',
 	}
-	let noteValue: { name: string; content: string, category_name: string, lang: string } = { ...defaultNoteValue }
+	let noteValue: Note = { ...defaultNoteValue }
 	$: if (!isShowModalCreate) {
 		noteValue = {...defaultNoteValue}
 		selectedNote = null
@@ -62,6 +95,7 @@
 		fetchUpdateNote.resetState()
 		fetchDeleteNote.resetState()
 	}
+	
 	async function saveAction() {
 		const response = await fetchInsertNote.fetch({body: noteValue})
 		if (!response) return
@@ -152,20 +186,34 @@
 		
 		<button on:click={() => isShowModalCreate = true}>Create New</button>
 		<button on:click={getAction}>Refresh</button>
-		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Deetail</button>
+		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Detail</button>
+		<select bind:value={filter.code}>
+			{#each listCode as code}
+				<option value="{code.toLowerCase()}">{code}</option>
+			{/each}
+		</select>
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
 			<p>Error: {$storeGetNote.errorMessage}</p>
 		{:else}
-			{#each notes as { id, name, created_date, content, isShowDetail }, i (id)}
-				<div>
-					<div>{i + 1}). {name}
-						<button on:click={() => showDetailNote(id)}> {isShowDetail ? 'Hide' : 'Show'} Detail</button> |
-						<button on:click={() => getDetailAction(id)}>Edit</button> |
-						<ButtonDelete
-							bind:id={id}
-							onSuccess={(isSuccess) => {
+			{#if notes.length === 0}
+				<div>Empty Note</div>
+			{/if}
+			{#each notes as { id, name, created_date, content, isShowDetail, lang }, i (id)}
+				<div class="note-card">
+					<div class="note-timestamp">{created_date}</div>
+					<div class="note-header">
+						<div>{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
+						<div>
+							<a href="/{id}">{name}</a>
+						</div>
+						<div>
+							<button on:click={() => showDetailNote(id)}> {isShowDetail ? 'Hide' : 'Show'} Detail</button> |
+							<button on:click={() => getDetailAction(id)}>Edit</button> |
+							<ButtonDelete
+								bind:noteId={id}
+								onSuccess={(isSuccess) => {
 								if (isSuccess) {
 										notes = notes.filter((a) => a.id !== id)
 									} else {
@@ -173,14 +221,13 @@
 									}
 								}
 							}
-							deleteFunc={deleteAction}
-						/>
+								deleteFunc={deleteAction}
+							/>
+						</div>
 					</div>
-					<div>{created_date}</div>
 					{#if isShowDetail}
 						<div class="note-content">{content}</div>
 					{/if}
-					<hr />
 				</div>
 			{/each}
 		{/if}
@@ -210,15 +257,21 @@
 						<td>Category</td>
 						<td>
 							<select name="category" bind:value={noteValue.category_name} required>
-								<option value="CODE">CODE</option>
-								<option value="OTHER">OTHER</option>
+								{#each listCategory as category}
+									<option value={category.toLowerCase()}>{category}</option>
+								{/each}
 							</select>
 						</td>
 					</tr>
 
 					<tr>
 						<td>Lang</td>
-						<td><input type="text" name="lang" bind:value={noteValue.lang} required /></td>
+						<td>
+							<select name="lang" bind:value={noteValue.lang} required>
+								{#each listCode as code}
+									<option value="{code.toLowerCase()}">{code}</option>
+								{/each}
+							</select>
 					</tr>
 
 					<tr>
@@ -259,5 +312,21 @@
 		.note-content {
         white-space: pre;
 				background: lightgray;
+		}
+		.note-card {
+				border-bottom: 2px solid darkgray;
+        width: max-content;
+				margin: 10px 0;
+				padding: 0 0 5px;
+		}
+		.note-card .note-header {
+				display: inline-flex;
+		}
+		
+		.note-header > div:not(:first-child) {
+        padding-left: 5px;
+		}
+		.note-card .note-timestamp {
+				font-size: 12px;
 		}
 </style>
