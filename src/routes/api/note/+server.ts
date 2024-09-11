@@ -9,6 +9,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	let db: VercelPool | null = null
 	try {
 		const data = await request.json()
+		if (
+			data.content.trim() == '' ||
+			data.name.trim() == '' ||
+			data.category_name.trim() == '' ||
+			data.lang.trim() == ''
+		) {
+			return json({ success: false, error: 'Value not valid' }, { status: 400 });
+		}
+		
 		db = createPool({ connectionString: POSTGRES_URL })
 		// Execute the INSERT query and return the inserted row using RETURNING
 		const addUser = await db.query<Note>(

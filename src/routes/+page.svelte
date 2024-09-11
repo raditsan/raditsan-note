@@ -89,6 +89,14 @@
 	}
 	
 	async function saveAction() {
+		if (
+			noteValue.content.trim() == '' ||
+			noteValue.name.trim() == '' ||
+			noteValue.category_name.trim() == '' ||
+			noteValue.lang.trim() == ''
+		) {
+			return
+		}
 		const response = await fetchInsertNote.fetch({body: noteValue})
 		if (!response) return
 		isShowModalCreate = false

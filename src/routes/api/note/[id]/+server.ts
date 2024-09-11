@@ -82,6 +82,14 @@ export const PUT: RequestHandler = async (props) => {
 	let db: VercelPool | null = null
 	try {
 		const data = await request.json()
+		if (
+			data.content.trim() == '' ||
+			data.name.trim() == '' ||
+			data.category_name.trim() == '' ||
+			data.lang.trim() == ''
+		) {
+			return json({ success: false, error: 'Value not valid' }, { status: 400 });
+		}
 		db = createPool({ connectionString: POSTGRES_URL })
 		const {rows} = await db.query(
 			`SELECT * from tbl_notes where id=$1`,
