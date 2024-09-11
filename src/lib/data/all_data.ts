@@ -128,7 +128,7 @@ const listCode = [
 	},{
 		value: "html",
 		name: "HTML",
-		hljsRegister: plaintext,
+		hljsRegister: css,
 	},{
 		value: "css",
 		name: "CSS",
