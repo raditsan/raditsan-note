@@ -105,7 +105,7 @@
 			...state,
 			data: {
 				...state.data,
-				data: [result.data, ...notes]
+				data: [result.data, ...(state.data?.data ?? [])]
 			} as ApiResponse<Note[]>
 		}))
 		// await getAction()
@@ -129,15 +129,18 @@
 		if (response.ok) {
 			isShowModalCreate = false
 			const result = await response.json();
-			const index = notes.findIndex((el) => el.id == id)
-			notes[index] = result.data
-			storeGetNote.update((state) => ({
-				...state,
-				data: {
-					...state.data,
-					data: notes
-				} as ApiResponse<Note[]>
-			}))
+			storeGetNote.update((state) => {
+				let notes = state.data?.data ?? []
+				const index = notes.findIndex((el) => el.id == id)
+				notes[index] = result.data
+				return {
+					...state,
+					data: {
+						...state.data,
+						data: notes
+					} as ApiResponse<Note[]>
+				}
+			})
 			// await getAction()
 		}
 	}
@@ -171,20 +174,37 @@
 	
 	async function showAllDetailNote() {
 		isShowAllDetailNote = !isShowAllDetailNote
-		storeGetNote.update((state) => ({
-			...state,
-			data: {
-				...state.data,
-				data: notes.map((el) => {
-					el.isShowDetail = isShowAllDetailNote
-					return el
-				})
-			} as ApiResponse<Note[]>
-		}))
+		storeGetNote.update((state) => {
+			let notes = state.data?.data ?? []
+			return {
+				...state,
+				data: {
+					...state.data,
+					data: notes.map((el) => {
+						el.isShowDetail = isShowAllDetailNote
+						return el
+					})
+				} as ApiResponse<Note[]>
+			}
+		})
+	}
+	
+	function doDeleteSuccess(id: string) {
+		storeGetNote.update((state) => {
+			let notes = (state.data?.data ?? []).filter((a) => a.id !== id)
+			return {
+				...state,
+				data: {
+					...state.data,
+					data: notes
+				} as never
+			}
+		})
 	}
 </script>
 <!--<a href="/detail">to detail</a>-->
 <svelte:head>
+<!--	eslint-disable-next-line svelte/no-at-html-tags-->
 	{@html hljsstyle}
 </svelte:head>
 
@@ -222,16 +242,7 @@
 								bind:noteId={id}
 								onSuccess={(isSuccess) => {
 									if (isSuccess) {
-										storeGetNote.update((state) => {
-											let notes = (state.data?.data ?? []).filter((a) => a.id !== id)
-											return {
-												...state,
-												data: {
-													...state.data,
-													data: notes
-												}
-											}
-										})
+										doDeleteSuccess(id)
 									} else {
 											alert("Failed delete note")
 									}
@@ -331,10 +342,10 @@
     .error {
         color: red;
     }
-		.note-content {
-        white-space: pre;
-				background: lightgray;
-		}
+		/*.note-content {*/
+    /*    white-space: pre;*/
+		/*		background: lightgray;*/
+		/*}*/
 		.note-card {
 				border-bottom: 2px solid darkgray;
         width: max-content;
