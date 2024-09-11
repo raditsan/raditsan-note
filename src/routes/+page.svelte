@@ -5,33 +5,17 @@
 	import Modal from '../components/Modal.svelte';
 	import type {ActionData } from './$types';
 	import { onMount } from 'svelte';
+	import { getHljsLanguage, getListCategory, getListCode } from '$lib/data/all_data';
+	import Highlight, { LineNumbers } from 'svelte-highlight';
+	import hljsstyle from "svelte-highlight/styles/vs";
 	
 	export let form: ActionData;
 	$: filter = {
 		code: "all",
 		search: ""
 	}
-	const listCode = [
-		"All",
-		"Swift",
-		"Java",
-		"Javascript",
-		"Typescript",
-		"PHP",
-		"Svelte",
-		"C#",
-		"HTML",
-		"CSS",
-		"TEXT",
-		"ShellScript",
-		"Flutter",
-		"Dart",
-		"OTHER",
-	]
-	const listCategory = [
-		"CODE",
-		"OTHER"
-	]
+	const listCode = getListCode()
+	const listCategory = getListCategory()
 	$: isLogin = form?.success || false
 	$: isShowAllDetailNote = false
 
@@ -78,7 +62,7 @@
 		let value = ""
 		Object.keys(e).forEach((key) => {
 			if (["lang", "name", "category_name", "content"].includes(key)) {
-				value += ` ${(e as any)[key]}`
+				value += ` ${(e as never)[key]}`
 			}
 		})
 		value = value.trim()
@@ -93,7 +77,7 @@
 		name: '',
 		content: '',
 		category_name: 'other',
-		lang: 'other',
+		lang: 'text',
 	}
 	let noteValue: Note = { ...defaultNoteValue }
 	$: if (!isShowModalCreate) {
@@ -192,6 +176,10 @@
 	}
 </script>
 <!--<a href="/detail">to detail</a>-->
+<svelte:head>
+	{@html hljsstyle}
+</svelte:head>
+
 {#if isLogin}
 	<div>
 		<button on:click={() => isShowModalCreate = true}>Create New</button>
@@ -199,7 +187,7 @@
 		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Detail</button>
 		<select bind:value={filter.code}>
 			{#each listCode as code}
-				<option value="{code.toLowerCase()}">{code}</option>
+				<option value="{code.value}">{code.name}</option>
 			{/each}
 		</select>
 		<input bind:value={filter.search} type="search" name="search" placeholder="Search" />
@@ -225,10 +213,19 @@
 							<ButtonDelete
 								bind:noteId={id}
 								onSuccess={(isSuccess) => {
-								if (isSuccess) {
-										notes = notes.filter((a) => a.id !== id)
+									if (isSuccess) {
+										storeGetNote.update((state) => {
+											let notes = (state.data?.data ?? []).filter((a) => a.id !== id)
+											return {
+												...state,
+												data: {
+													...state.data,
+													data: notes
+												}
+											}
+										})
 									} else {
-										alert("Failed delete note")
+											alert("Failed delete note")
 									}
 								}
 							}
@@ -237,7 +234,9 @@
 						</div>
 					</div>
 					{#if isShowDetail}
-						<div class="note-content">{content}</div>
+						<Highlight language={getHljsLanguage(lang)} code={content} let:highlighted>
+							<LineNumbers {highlighted} />
+						</Highlight>
 					{/if}
 				</div>
 			{/each}
@@ -269,22 +268,17 @@
 						<td>
 							<select name="category" bind:value={noteValue.category_name} required>
 								{#each listCategory as category}
-									<option value={category.toLowerCase()}>{category}</option>
+									<option value={category.value}>{category.name}</option>
+								{/each}
+							</select>
+
+							<select name="lang" bind:value={noteValue.lang} required>
+								{#each listCode as code}
+									<option value="{code.value}">{code.name}</option>
 								{/each}
 							</select>
 						</td>
 					</tr>
-
-					<tr>
-						<td>Lang</td>
-						<td>
-							<select name="lang" bind:value={noteValue.lang} required>
-								{#each listCode as code}
-									<option value="{code.toLowerCase()}">{code}</option>
-								{/each}
-							</select>
-					</tr>
-
 					<tr>
 						<td>Content</td>
 						<td><textarea name="content" bind:value={noteValue.content} required /></td>
