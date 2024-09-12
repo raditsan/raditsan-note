@@ -106,7 +106,8 @@ export const PUT: RequestHandler = async (props) => {
         category_name=$4, 
         lang=$5, 
         updated_date=CURRENT_TIMESTAMP,
-        updated_by=$6
+        updated_by=$6,
+        version = version + 1
         WHERE id=$1
         RETURNING *;`,
 			[
