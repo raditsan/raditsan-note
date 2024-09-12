@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Fetcher, type FetchResult } from '$lib/utils/fetcher';
 	import type { ApiResponse, Note } from '$lib/types/alltypes';
-	import ButtonDelete from '../components/ButtonDelete.svelte';
-	import Modal from '../components/Modal.svelte';
+	import ButtonDelete from '$lib/components/ButtonDelete.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import type {ActionData } from './$types';
 	import { onMount } from 'svelte';
 	import { getHljsLanguage, getListCategory, getListCode } from '$lib/data/all_data';

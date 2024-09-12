@@ -23,6 +23,7 @@
 </script>
 
 <svelte:head>
+<!--	eslint-disable-next-line svelte/no-at-html-tags-->
 	{@html hljsstyle}
 	<title>{data.note.name}</title>
 	<meta property="description" content="{data.note.name}" />

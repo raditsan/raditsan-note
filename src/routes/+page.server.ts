@@ -16,7 +16,7 @@ const db = {
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ cookies, url, locals }) {
-	console.log("locals in load", locals)
+	// console.log("locals in load", locals)
 	return {
 		loginProfile: {
 			name: ""
