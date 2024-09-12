@@ -245,7 +245,7 @@
 				<div class="note-card">
 					<div class="note-timestamp">{dataFormat(created_date)} | Version: {version}</div>
 					<div class="note-header">
-						<div>{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
+						<div class="note-number">{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
 						<div>
 							<a href="/{id}" target="_blank">{name}</a>
 						</div>
@@ -359,13 +359,17 @@
 		/*		background: lightgray;*/
 		/*}*/
 		.note-card {
-				border-bottom: 2px solid darkgray;
-        width: max-content;
+				/*border-bottom: 2px solid darkgray;*/
+        /*width: max-content;*/
 				margin: 10px 0;
 				padding: 0 0 5px;
 		}
 		.note-card .note-header {
 				display: inline-flex;
+		}
+		
+		.note-header .note-number {
+				white-space: nowrap;
 		}
 		
 		.note-header > div:not(:first-child) {
