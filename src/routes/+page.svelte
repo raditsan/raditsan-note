@@ -5,17 +5,16 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import type {ActionData } from './$types';
 	import { onMount } from 'svelte';
-	import { getHljsLanguage, getListCategory, getListCode } from '$lib/data/all_data';
-	import Highlight, { LineNumbers } from 'svelte-highlight';
-	import hljsstyle from "svelte-highlight/styles/vs";
-	
+	import { getListCode } from '$lib/data/all_data';
+	import CodeHighlight from '$lib/components/CodeHighlight.svelte';
+
 	export let form: ActionData;
 	$: filter = {
 		code: "all",
 		search: ""
 	}
 	const listCode = getListCode()
-	const listCategory = getListCategory()
+	// const listCategory = getListCategory()
 	$: isLogin = form?.success || false
 	$: isShowAllDetailNote = false
 
@@ -222,10 +221,6 @@
 	}
 </script>
 <!--<a href="/detail">to detail</a>-->
-<svelte:head>
-<!--	eslint-disable-next-line svelte/no-at-html-tags-->
-	{@html hljsstyle}
-</svelte:head>
 
 {#if isLogin}
 	<div>
@@ -246,7 +241,7 @@
 			{#if notes.length === 0}
 				<div>Empty Note</div>
 			{/if}
-			{#each notes as { id, name, created_date, content, isShowDetail, lang, version }, i (id)}
+			{#each notes as { id, name, created_date, isShowDetail, lang, version }, i (id)}
 				<div class="note-card">
 					<div class="note-timestamp">{dataFormat(created_date)} | Version: {version}</div>
 					<div class="note-header">
@@ -272,9 +267,7 @@
 						</div>
 					</div>
 					{#if isShowDetail}
-						<Highlight language={getHljsLanguage(lang)} code={content} let:highlighted>
-							<LineNumbers {highlighted} />
-						</Highlight>
+						<CodeHighlight note={notes[i]} />
 					{/if}
 				</div>
 			{/each}

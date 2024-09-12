@@ -13,22 +13,8 @@
 <!--</div>-->
 <!--<Highlight language={typescript} {code} />-->
 <script lang="ts">
-	import Highlight, { LineNumbers } from "svelte-highlight";
-	// import typescript from "svelte-highlight/languages/typescript";
-	import hljsstyle from "svelte-highlight/styles/vs";
-	import { getHljsLanguage } from '$lib/data/all_data';
+	import CodeHighlight from '$lib/components/CodeHighlight.svelte';
 	export let data: import('./$types').PageData;
-	const code = data.note.content;
-	const lang = getHljsLanguage(data.note.lang)
 </script>
 
-<svelte:head>
-<!--	eslint-disable-next-line svelte/no-at-html-tags-->
-	{@html hljsstyle}
-	<title>{data.note.name}</title>
-	<meta property="description" content="{data.note.name}" />
-</svelte:head>
-
-<Highlight language={lang} {code} let:highlighted>
-	<LineNumbers {highlighted} />
-</Highlight>
+<CodeHighlight note={data.note} />
