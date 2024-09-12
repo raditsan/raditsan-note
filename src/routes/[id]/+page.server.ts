@@ -26,13 +26,13 @@ export async function load({ cookies, locals, params }) {
 			error(404, "Data not found");
 		}
 	} catch (e: unknown) {
-		if (e as HttpError) {
+		if (e && typeof e === 'object' && 'status' in e && 'body' in e) {
 			const err = e as HttpError
 			throw error(err.status, err.body)
 		} else {
-			// Handle errors by returning a response with an error message
-			const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-			throw error(500, errorMessage)
+			console.error(e)
+			// const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
+			throw error(500, "Data not found")
 		}
 	} finally {
 		if (db) {

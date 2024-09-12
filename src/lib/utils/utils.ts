@@ -33,7 +33,10 @@ export function decrypt(text: string) {
 	return decrypted.toString();
 }
 
-export function simpleEncrypt(fromText: string | number) {
+export function simpleEncrypt(fromText: string | number | undefined) {
+	if (!fromText) {
+		throw Error("Invalid input value")
+	}
 	const text = `${fromText}`
 	const iv = Buffer.alloc(16, 0); // Fixed IV (all zeros)
 	const cipher = crypto.createCipheriv('aes-256-cbc', Buffer_STATIC_ENCRYPTION_KEY, iv);
@@ -43,7 +46,10 @@ export function simpleEncrypt(fromText: string | number) {
 }
 
 // Function to decrypt text using a fixed IV
-export function simpleDecrypt(fromText: string | number) {
+export function simpleDecrypt(fromText: string | number | undefined) {
+	if (!fromText) {
+		throw Error("Invalid input value")
+	}
 	const text = `${fromText}`
 	const iv = Buffer.alloc(16, 0); // Fixed IV (must match the one used for encryption)
 	const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer_STATIC_ENCRYPTION_KEY, iv);

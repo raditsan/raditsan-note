@@ -1,3 +1,4 @@
+<!--lib/components/ConfirmationDialog.svelte-->
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	
