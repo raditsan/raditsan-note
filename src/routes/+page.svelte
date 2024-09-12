@@ -201,6 +201,25 @@
 			}
 		})
 	}
+	
+	function dataFormat(timestamp: string | undefined) {
+		//timestamp = 2024-09-12T02:12:39.334Z
+		if (!timestamp) {
+			return timestamp
+		}
+		const options: Intl.DateTimeFormatOptions = {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			timeZoneName: 'short',
+			hour12: false,
+		};
+		const date = new Date(timestamp)
+		return date.toLocaleString('en-GB', options).replace(',', ' -');
+	}
 </script>
 <!--<a href="/detail">to detail</a>-->
 <svelte:head>
@@ -227,9 +246,9 @@
 			{#if notes.length === 0}
 				<div>Empty Note</div>
 			{/if}
-			{#each notes as { id, name, created_date, content, isShowDetail, lang }, i (id)}
+			{#each notes as { id, name, created_date, content, isShowDetail, lang, version }, i (id)}
 				<div class="note-card">
-					<div class="note-timestamp">{created_date}</div>
+					<div class="note-timestamp">{dataFormat(created_date)} | Version: {version}</div>
 					<div class="note-header">
 						<div>{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
 						<div>

@@ -11,6 +11,7 @@ export interface Note {
 	category_name: string;
 	created_date?: string;
 	is_deleted?: boolean;
+	version?: number;
 	
 	isShowDetail?: boolean;
 }
