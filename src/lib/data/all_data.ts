@@ -4,10 +4,10 @@ import {
 	java,
 	css,
 	swift,
-	plaintext, 
-	php, 
+	plaintext,
+	php,
 	shell,
-	csharp, 
+	csharp,
 	dart,
 	awk,
 	bash,
@@ -22,10 +22,15 @@ import {
 	sas,
 	dockerfile,
 	objectivec,
-	less,
-	
-} from 'svelte-highlight/languages';
+	less, type LanguageType
 
+} from 'svelte-highlight/languages';
+import { hljsDefineSvelte } from '$lib/data/svelte-highlight';
+// const { hljsDefineSvelte } = await import('./svelte-highlight');
+const svelte: LanguageType<string> = {
+	name: "svelte",
+	register: hljsDefineSvelte
+}
 const listCategory = [
 	{
 		value: "code",
@@ -120,7 +125,7 @@ const listCode = [
 	},{
 		value: "svelte",
 		name: "Svelte",
-		hljsRegister: typescript,
+		hljsRegister: svelte,
 	},{
 		value: "C#",
 		name: "C#",
