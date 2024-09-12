@@ -55,6 +55,18 @@ const listCode = [
 		name: "Docker File",
 		hljsRegister: dockerfile,
 	},{
+		value: "git",
+		name: "GIT",
+		// hljsRegister: dockerfile,
+	},{
+		value: "node",
+		name: "Node",
+		// hljsRegister: dockerfile,
+	},{
+		value: "terminal",
+		name: "Terminal",
+		// hljsRegister: dockerfile,
+	},{
 		value: "figma",
 		name: "Figma",
 		hljsRegister: plaintext,
