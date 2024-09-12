@@ -304,11 +304,11 @@
 					<tr>
 						<td>Category</td>
 						<td>
-							<select name="category" bind:value={noteValue.category_name} required>
-								{#each listCategory as category}
-									<option value={category.value}>{category.name}</option>
-								{/each}
-							</select>
+<!--							<select name="category" bind:value={noteValue.category_name} required>-->
+<!--								{#each listCategory as category}-->
+<!--									<option value={category.value}>{category.name}</option>-->
+<!--								{/each}-->
+<!--							</select>-->
 
 							<select name="lang" bind:value={noteValue.lang} required>
 								{#each listCode as code}

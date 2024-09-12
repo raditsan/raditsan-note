@@ -55,6 +55,14 @@ const listCode = [
 		name: "Docker File",
 		hljsRegister: dockerfile,
 	},{
+		value: "figma",
+		name: "Figma",
+		hljsRegister: plaintext,
+	},{
+		value: "url",
+		name: "URL",
+		hljsRegister: plaintext,
+	},{
 		value: "objectivec",
 		name: "Objective C",
 		hljsRegister: objectivec,
