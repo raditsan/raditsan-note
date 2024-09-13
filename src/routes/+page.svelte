@@ -222,6 +222,10 @@
 </script>
 <!--<a href="/detail">to detail</a>-->
 
+<svelte:head>
+	<title>Raditsan Note</title>
+</svelte:head>
+
 {#if isLogin}
 	<div>
 		<button on:click={() => isShowModalCreate = true}>Create New</button>

@@ -3,6 +3,7 @@ import hljsstyle from 'svelte-highlight/styles/vs';
 import Highlight, { HighlightAuto, LineNumbers } from 'svelte-highlight';
 import type { Note } from '$lib/types/alltypes.js';
 import { getHljsLanguage } from '$lib/data/all_data';
+import { page } from '$app/stores';
 export let note: Note;
 const code = note.content;
 const lang = getHljsLanguage(note.lang)
@@ -14,8 +15,10 @@ const isAuto = [
 <svelte:head>
 	<!--	eslint-disable-next-line svelte/no-at-html-tags-->
 	{@html hljsstyle}
-	<title>{note.name}</title>
-	<meta property="description" content="{note.name}" />
+	{#if !["/"].includes($page.url.pathname)}
+		<title>{note.name}</title>
+		<meta property="description" content="{note.name}" />
+	{/if}
 </svelte:head>
 
 {#if isAuto}
