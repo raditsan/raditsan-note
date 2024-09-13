@@ -10,6 +10,7 @@ export interface Note {
 	lang: string;
 	category_name: string;
 	created_date?: string;
+	updated_date?: string;
 	is_deleted?: boolean;
 	version?: number;
 	

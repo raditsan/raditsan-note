@@ -241,9 +241,17 @@
 			{#if notes.length === 0}
 				<div>Empty Note</div>
 			{/if}
-			{#each notes as { id, name, created_date, isShowDetail, lang, version }, i (id)}
+			{#each notes as { id, name, created_date, updated_date, isShowDetail, lang, version }, i (id)}
 				<div class="note-card">
-					<div class="note-timestamp">{dataFormat(created_date)} | Version: {version}</div>
+					<div class="note-timestamp">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>
+						{dataFormat(created_date)}
+						{#if updated_date}
+							| {dataFormat(updated_date)}
+						{/if}
+						| Version: {version}
+					</div>
+					
 					<div class="note-header">
 						<div class="note-number">{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
 						<div>
@@ -377,7 +385,12 @@
 		}
 		.note-card .note-timestamp {
 				font-size: 12px;
+				display: flex;
 		}
+    .note-card .note-timestamp svg {
+        width: 12px;
+        height: 12px;
+    }
     #table{
         display: table;
 				border-spacing: 5px;
