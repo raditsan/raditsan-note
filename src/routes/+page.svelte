@@ -64,7 +64,7 @@
 				value += ` ${(e as never)[key]}`
 			}
 		})
-		value = value.trim()
+		value = value.trim().toLowerCase()
 		return (filterCode  == "all" ? true : 
 			filterCode == lang) &&
 			value.includes(filter.search.toLowerCase())
