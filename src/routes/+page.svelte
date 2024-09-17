@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { getListCode } from '$lib/data/all_data';
 	import CodeHighlight from '$lib/components/CodeHighlight.svelte';
+	import AceEditor from '$lib/components/AceEditor.svelte';
 
 	export let form: ActionData;
 	$: filter = {
@@ -70,6 +71,7 @@
 			value.includes(filter.search.toLowerCase())
 	})
 
+	let editor: any;
 	let isShowModalCreate = false
 	const defaultNoteValue: Note = {
 		id: '',
@@ -153,6 +155,7 @@
 		const result = await response.json();
 		if (result.success) {
 			selectedNote = result.data
+			editor.setValue(selectedNote?.content, 1)
 		}
 	}
 	
@@ -295,7 +298,7 @@
 			{:else if $storeUpdateNote.errorMessage}
 				<p style="color: red">{$storeUpdateNote.errorMessage}</p>
 			{:else}
-				<table>
+				<table class="form-table">
 					<tr>
 						<td>Name</td>
 						<td><input type="text" name="name" bind:value={noteValue.name} required /></td>
@@ -322,11 +325,18 @@
 							</select>
 						</td>
 					</tr>
-					<tr>
-						<td>Content</td>
-						<td><textarea name="content" bind:value={noteValue.content} required /></td>
-					</tr>
+<!--					<tr>-->
+<!--						<td>Content</td>-->
+<!--						<td><textarea name="content" bind:value={noteValue.content} required /></td>-->
+<!--					</tr>-->
 				</table>
+				<br />
+				<AceEditor
+					bind:editor={editor}
+					bind:value={noteValue.content}
+					bind:language={noteValue.lang}
+				/>
+				<br />
 				<button on:click={() => {
 				if (selectedNote) {
 					updateAction()
@@ -363,6 +373,7 @@
 {/if}
 
 <style>
+		
     .error {
         color: red;
     }
@@ -395,6 +406,9 @@
         width: 12px;
         height: 12px;
     }
+		.form-table {
+				/*width: 100%;*/
+		}
     #table{
         display: table;
 				border-spacing: 5px;
@@ -404,8 +418,8 @@
     }
     .td{
         display: table-cell; }
-    textarea {
-        width: 200px;
-        height: 200px;
-    }
+    /*textarea {*/
+    /*    width: 200px;*/
+    /*    height: 200px;*/
+    /*}*/
 </style>
