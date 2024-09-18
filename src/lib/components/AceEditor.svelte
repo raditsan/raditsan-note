@@ -3,10 +3,12 @@
 	import 'ace-builds/src-noconflict/theme-xcode';
 	import 'ace-builds/src-noconflict/ext-language_tools';
 	import { afterUpdate, onDestroy, onMount } from 'svelte';
+	import type { Ace } from 'ace-builds';
 
+	export let readOnly = false
 	export let value: string = '';
 	export let language: string = "text";
-	let editor: any;
+	let editor: Ace.Editor;
 	let editorElement: HTMLDivElement;
 	let prevLang = "text"
 
@@ -17,6 +19,7 @@
 		ace.config.set('basePath', 'https://ajaxorg.github.io/ace-builds/src-min-noconflict/'); //get for mode base path url
 		ace.require("ace/ext/language_tools");
 		editor = ace.edit(editorElement);
+		editor.setReadOnly(readOnly);
 		editor.setTheme(`ace/theme/xcode`);
 		editor.setValue(value, 1);
 		// editor.session.setMode(`ace/mode/html`);
