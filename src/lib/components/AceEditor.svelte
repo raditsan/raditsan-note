@@ -15,7 +15,6 @@
 
 
 	onMount(() => {
-		console.log("mount editor", value)
 		ace.config.set('basePath', 'https://ajaxorg.github.io/ace-builds/src-min-noconflict/'); //get for mode base path url
 		// ace.config.set('basePath', '/ace-builds'); 
 		ace.require("ace/ext/language_tools");
