@@ -1,5 +1,7 @@
 <script lang="ts">
 	export let showModal: boolean; // boolean
+	export let onSave = () => {};
+	export let disabledSaveButton = false;
 	let dialog: HTMLDialogElement; // HTMLDialogElement
 	$: if (dialog && showModal) {
 		dialog.showModal()
@@ -18,13 +20,16 @@
 	<div on:click|stopPropagation>
 		<div class="modal-header">
 			<strong><slot name="header" /></strong>
-			<button class="modal-close-button" autofocus on:click={() => dialog.close()} />
+			<button class="modal-close-button" on:click={() => dialog.close()} />
 		</div>
 		<hr />
 		{#if showModal}
 			<slot />
 		{/if}
 		<hr />
+		<div class="confirm-footer">
+			<button class="confirm-button" on:click={onSave} disabled={disabledSaveButton}>Save</button>
+		</div>
 	</div>
 </dialog>
 
@@ -79,5 +84,24 @@
         border: 0;
         border-radius: .25rem;
         opacity: .5
+		}
+    button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+		.confirm-footer {
+        display: flex;
+        justify-content: flex-end;
+		}
+    .confirm-button {
+        background-color: #4caf50;
+        color: white;
+    }
+		.confirm-button:disabled {
+        background-color: #575757;
+        cursor: not-allowed;
 		}
 </style>

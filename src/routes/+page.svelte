@@ -288,7 +288,17 @@
 			{/each}
 		{/if}
 
-		<Modal bind:showModal={isShowModalCreate}>
+		<Modal 
+			bind:showModal={isShowModalCreate}
+			disabledSaveButton={$storeInsertNote.isLoading || $storeUpdateNote.isLoading || $storeGetDetailNote.isLoading}
+			onSave={() => {
+				if (selectedNote) {
+					updateAction()
+				} else {
+					saveAction()
+				}
+			}}
+		>
 			{#if $storeInsertNote.isLoading || $storeUpdateNote.isLoading}
 				<p>Saving...</p>
 			{:else if $storeGetDetailNote.isLoading}
@@ -336,14 +346,6 @@
 					bind:value={noteValue.content}
 					bind:language={noteValue.lang}
 				/>
-				<br />
-				<button on:click={() => {
-				if (selectedNote) {
-					updateAction()
-				} else {
-					saveAction()
-				}
-			}}>Save</button>
 			{/if}
 		</Modal>
 	</div>

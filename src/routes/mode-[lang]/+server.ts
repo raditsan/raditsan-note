@@ -2,6 +2,8 @@
 // import { promises as fs } from 'fs';
 // import path from 'path';
 
+import { getAceLanguage } from '$lib/data/all_data';
+
 /** @type {import('./$types').RequestHandler} */
 export async function GET({params}) {
 	const {lang} = params
@@ -13,12 +15,25 @@ export async function GET({params}) {
 		// Read the file content
 		// const fileContent = await fs.readFile(modeFilePath, 'utf-8');
 
-		// Return the file content as JavaScript
-		return new Response(fileContent, {
-			headers: {
-				'Content-Type': 'application/javascript',
-			},
-		});
+		const response = await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/mode-${getAceLanguage(lang)}`)
+		if (response.status == 200) {
+			const text = await response.text()
+			// Return the file content as JavaScript
+			return new Response(text, {
+				headers: {
+					'Content-Type': 'application/javascript',
+				},
+			});
+		} else {
+			const response = await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/mode-text.js`)
+			const text = await response.text()
+			// Return the file content as JavaScript
+			return new Response(text, {
+				headers: {
+					'Content-Type': 'application/javascript',
+				},
+			});
+		}
 	} catch (error: unknown) {
 		// If file not found or error occurs, return 404 with a message
 		return new Response(`// Mode not found`, {

@@ -147,7 +147,7 @@ const listCode = [
 		name: "Svelte",
 		hljsRegister: svelte,
 	},{
-		value: "C#",
+		value: "csharp",
 		name: "C#",
 		hljsRegister: csharp,
 	},{
@@ -168,6 +168,7 @@ const listCode = [
 		hljsRegister: plaintext,
 	},{
 		value: "shellscript",
+		valueCodeAce: "sh.js",
 		name: "ShellScript",
 		hljsRegister: shell,
 	},{
@@ -193,8 +194,13 @@ const getHljsLanguage = (lang: string) => {
 	return listCode.find((e) => e.value == lang)?.hljsRegister ?? plaintext
 }
 
+const getAceLanguage = (lang: string) => {
+	return listCode.find((e) => e.value == lang.replaceAll(".js", ""))?.valueCodeAce ?? lang
+}
+
 export {
 	getHljsLanguage,
 	getListCode,
 	getListCategory,
+	getAceLanguage,
 }
