@@ -15,10 +15,10 @@
 	};
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <div
 	class="modal-backdrop"
 	on:click={closeModal}
-	role="button"
 	class:hidden={!showModal}
 >
 	<div
@@ -30,7 +30,6 @@
 			<button
 				class="modal-close-button"
 				on:click={closeModal}
-				role="button"
 				tabindex="0"
 				aria-label="Close"
 				on:keydown={handleKeyDown}

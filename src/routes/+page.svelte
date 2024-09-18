@@ -242,7 +242,7 @@
 				<option value="{code.value}">{code.name}</option>
 			{/each}
 		</select>
-		<input bind:value={filter.search} type="search" name="search" placeholder="Search" />
+		<input bind:value={filter.search} type="search" name="search" placeholder="Search" /> {notes.length} Notes
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
