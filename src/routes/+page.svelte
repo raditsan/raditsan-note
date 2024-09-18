@@ -262,7 +262,7 @@
 					<div class="note-header">
 						<div class="note-number">{i + 1}). <b>[{lang.toUpperCase()}]</b></div>
 						<div>
-							<a href="/{id}" target="_blank">{name}</a>
+							<a href="/view/{id}" target="_blank">{name}</a>
 						</div>
 						<div>
 							<button on:click={() => showDetailNote(id)}> {isShowDetail ? 'Hide' : 'Show'} Detail</button> |

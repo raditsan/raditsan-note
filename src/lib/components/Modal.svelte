@@ -21,7 +21,9 @@
 			<button class="modal-close-button" autofocus on:click={() => dialog.close()} />
 		</div>
 		<hr />
-		<slot />
+		{#if showModal}
+			<slot />
+		{/if}
 		<hr />
 	</div>
 </dialog>

@@ -1,24 +1,27 @@
 <script lang="ts">
-	import { onMount, afterUpdate } from 'svelte';
+	import { onMount, afterUpdate, onDestroy, beforeUpdate } from 'svelte';
 	import ace from 'ace-builds/src-noconflict/ace';
 	import 'ace-builds/src-noconflict/theme-xcode';
-
+	import('ace-builds/src-noconflict/mode-text')
+	
 	export let value = '';
-	export let language = 'javascript'; // Default language mode
-	export let theme = 'xcode'; // Default theme
+	export let language: string = "text";
+	export let theme = 'xcode';
 	export let readOnly = false;
 	export let onValueChange = () => {};
 
+	let prevLang = "text"
 	let editorElement: HTMLDivElement;
 	export let editor: any;
 
 	onMount(() => {
+		ace.config.set('basePath', '/node_modules/ace-builds/src-min-noconflict');
 		editor = ace.edit(editorElement);
 		editor.setTheme(`ace/theme/${theme}`);
 		editor.setValue(value, 1);
 		editor.setReadOnly(readOnly);
 		editor.session.setUseWorker(false);
-		setLanguageMode(language); // Set initial language mode
+		// setLanguageMode(language); // Set initial language mode
 
 		editor.session.on('change', () => {
 			const newValue = editor.getValue();
@@ -26,25 +29,34 @@
 			onValueChange(newValue);
 		});
 
-		return () => {
-			editor.destroy();
-		};
+		// return () => {
+		// 	editor.destroy();
+		// };
 	});
+	
+	onDestroy(() => {
+		console.log("destroy")
+		editor && editor.destroy();
+	})
 
-	// Update language mode dynamically when language prop changes
 	afterUpdate(() => {
-		setLanguageMode(language);
+		if (language != prevLang) {
+			setLanguageMode(language);
+		}
+		prevLang = language
 	});
 
 	async function setLanguageMode(lang: string) {
 		try {
-			const response = await fetch('/code/'+lang)
-			const script = await response.text()
-			eval(script);
-			editor.session.setMode("ace/mode/"+lang);
-			// editor.session.setMode(`ace/mode/${lang}`);
-		} catch (e: unknown) {
-			console.log("e", e.message)
+			if (language != "text") {
+				// const response = await fetch('/mode-'+lang+'.js')
+				// const script = await response.text()
+				// eval(script);
+				// editor.session.setMode(lang);
+				editor.session.setMode(`ace/mode/${lang}`);
+			}
+		} catch (e) {
+			console.log("eee", e)
 		}
 	}
 </script>
