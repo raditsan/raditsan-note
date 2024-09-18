@@ -71,7 +71,6 @@
 			value.includes(filter.search.toLowerCase())
 	})
 
-	let editor: any;
 	let isShowModalCreate = false
 	const defaultNoteValue: Note = {
 		id: '',
@@ -155,7 +154,6 @@
 		const result = await response.json();
 		if (result.success) {
 			selectedNote = result.data
-			editor.setValue(selectedNote?.content, 1)
 		}
 	}
 	
@@ -307,7 +305,7 @@
 				<p style="color: red">{$storeGetDetailNote.errorMessage}</p>
 			{:else if $storeUpdateNote.errorMessage}
 				<p style="color: red">{$storeUpdateNote.errorMessage}</p>
-			{:else}
+			{:else if selectedNote != null}
 				<table class="form-table">
 					<tr>
 						<td>Name</td>
@@ -342,7 +340,6 @@
 				</table>
 				<br />
 				<AceEditor
-					bind:editor={editor}
 					bind:value={noteValue.content}
 					bind:language={noteValue.lang}
 				/>

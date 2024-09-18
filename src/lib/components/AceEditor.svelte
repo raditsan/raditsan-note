@@ -1,30 +1,26 @@
 <script lang="ts">
-	import { onMount, afterUpdate, onDestroy } from 'svelte';
 	import ace from 'ace-builds/src-noconflict/ace';
 	import 'ace-builds/src-noconflict/theme-xcode';
 	import 'ace-builds/src-noconflict/ext-language_tools';
-	import 'ace-builds/src-noconflict/mode-text';
-	import 'ace-builds/src-noconflict/snippets/text';
-	
-	export let value = '';
-	export let language: string = "text";
-	export let theme = 'xcode';
-	export let readOnly = false;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	export let onValueChange = (value: string) => {};
+	import { afterUpdate, onDestroy, onMount } from 'svelte';
 
-	let prevLang = "text"
+	export let value: string = '';
+	export let language: string = "text";
+	let editor: any;
 	let editorElement: HTMLDivElement;
-	export let editor: any;
+	let prevLang = "text"
+
+
 
 	onMount(() => {
-		ace.config.set('basePath', '/ace-builds'); //get for mode base path url
+		console.log("mount editor", value)
+		ace.config.set('basePath', 'https://ajaxorg.github.io/ace-builds/src-min-noconflict/'); //get for mode base path url
 		ace.require("ace/ext/language_tools");
 		editor = ace.edit(editorElement);
-		editor.setTheme(`ace/theme/${theme}`);
+		editor.setTheme(`ace/theme/xcode`);
 		editor.setValue(value, 1);
-		editor.setReadOnly(readOnly);
-		// editor.session.setUseWorker(true);
+		// editor.session.setMode(`ace/mode/html`);
+		editor.session.setUseWorker(true);
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
@@ -35,39 +31,26 @@
 		editor.session.on('change', () => {
 			const newValue = editor.getValue();
 			value = newValue
-			onValueChange(newValue);
+			console.log("newValue", newValue)
+
 		});
 
 		// return () => {
 		// 	editor.destroy();
 		// };
 	});
-	
-	onDestroy(() => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		editor && editor.destroy();
-	})
 
 	afterUpdate(() => {
 		if (language != prevLang) {
-			setLanguageMode(language);
+			editor.session.setMode(`ace/mode/`+language);
 		}
 		prevLang = language
 	});
 
-	async function setLanguageMode(lang: string) {
-		try {
-			if (language != "text") {
-				// const response = await fetch('/mode-'+lang+'.js')
-				// const script = await response.text()
-				// eval(script);
-				// editor.session.setMode(lang);
-				editor.session.setMode(`ace/mode/${lang}`);
-			}
-		} catch (e) {
-			console.log("eee", e)
-		}
-	}
+	onDestroy(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		editor && editor.destroy();
+	})
 </script>
 
 <style>
