@@ -2,8 +2,6 @@
 // import { promises as fs } from 'fs';
 // import path from 'path';
 
-import { getAceLanguage } from '$lib/data/all_data';
-
 /** @type {import('./$types').Actions} */
 export async function GET({params}) {
 	const {lang} = params
@@ -15,7 +13,7 @@ export async function GET({params}) {
 		// Read the file content
 		// const fileContent = await fs.readFile(modeFilePath, 'utf-8');
 
-		const response = await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/worker-${getAceLanguage(lang)}`)
+		const response = await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/worker-${lang}`)
 		if (response.status == 200) {
 			const text = await response.text()
 			// Return the file content as JavaScript
