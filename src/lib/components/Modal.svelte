@@ -75,8 +75,8 @@
     .modal {
         background: white;
         border-radius: 0.2em;
-        width: 100%;
-        max-width: 32em;
+        width: calc(100vw - 8em);
+        /*max-width: 32em;*/
         padding: 1em;
         position: relative;
         animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);

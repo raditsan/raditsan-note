@@ -72,6 +72,7 @@
 	})
 
 	let isShowModalCreate = false
+	let isModalCreated = false
 	const defaultNoteValue: Note = {
 		id: '',
 		name: '',
@@ -83,6 +84,7 @@
 	$: if (!isShowModalCreate) {
 		noteValue = {...defaultNoteValue}
 		selectedNote = null
+		isModalCreated = false
 		fetchGetNoteDetail.resetState()
 		fetchUpdateNote.resetState()
 		fetchDeleteNote.resetState()
@@ -229,7 +231,10 @@
 
 {#if isLogin}
 	<div>
-		<button on:click={() => isShowModalCreate = true}>Create New</button>
+		<button on:click={() => {
+			isShowModalCreate = true
+			isModalCreated = true
+		}}>Create New</button>
 		<button on:click={getAction}>Refresh</button>
 		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Detail</button>
 		<select bind:value={filter.code}>
@@ -305,7 +310,7 @@
 				<p style="color: red">{$storeGetDetailNote.errorMessage}</p>
 			{:else if $storeUpdateNote.errorMessage}
 				<p style="color: red">{$storeUpdateNote.errorMessage}</p>
-			{:else if selectedNote != null}
+			{:else if selectedNote != null || isModalCreated}
 				<table class="form-table">
 					<tr>
 						<td>Name</td>
