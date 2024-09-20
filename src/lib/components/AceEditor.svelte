@@ -34,8 +34,6 @@
 		editor.session.on('change', () => {
 			const newValue = editor.getValue();
 			value = newValue
-			console.log("newValue", newValue)
-
 		});
 
 		// return () => {

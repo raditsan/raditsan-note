@@ -977,7 +977,9 @@ const getListCode = () => {
 	
 	return listCode.map((e) => ({
 		name: e.name,
-		value: e.value
+		count: 0,
+		value: e.value,
+		isHidden: false
 	}))
 }
 

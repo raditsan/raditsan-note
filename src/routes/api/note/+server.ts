@@ -48,6 +48,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ success: false, error: 'Insertion failed' }, { status: 400 });
 		}
 	} catch (error: unknown) {
+		console.error(error)
 		// Handle errors by returning a response with an error message
 		const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
 		return json({ success: false, error: errorMessage }, { status: 500 });

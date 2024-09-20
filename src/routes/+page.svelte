@@ -50,9 +50,12 @@
 	const unsubscribe = storeGetNote.subscribe((value) => {
 		rawNotes = value.data?.data ?? []
 		listCode = getListCode().map(el => {
+			let count = getCountNoteByLang(el.value)
 			return {
 				...el,
-				name: `${el.name} ${getCountNoteByLang(el.value)}`
+				count,
+				isHidden: el.value == "all" ? false : count == 0,
+				name: el.name
 			}
 		})
 	})
@@ -64,14 +67,11 @@
 	}
 
 	function getCountNoteByLang(lang: string) {
-		let value: string = "";
+		let value = 0;
 		if (lang == "all") {
-			value = `(${rawNotes.length})`
+			value = rawNotes.length
 		} else {
-			const count = rawNotes.filter((el) =>  el.lang == lang).length
-			if (count > 0) {
-				value = `(${count})`
-			}
+			value = rawNotes.filter((el) =>  el.lang == lang).length
 		}
 		return value
 	}
@@ -126,15 +126,19 @@
 		}
 		const response = await fetchInsertNote.fetch({body: noteValue})
 		if (!response) return
-		isShowModalCreate = false
-		const result = await response.json();
-		storeGetNote.update((state) => ({
-			...state,
-			data: {
-				...state.data,
-				data: [result.data, ...(state.data?.data ?? [])]
-			} as ApiResponse<Note[]>
-		}))
+		if (response.status == 200) {
+			isShowModalCreate = false
+			const result = await response.json();
+			storeGetNote.update((state) => ({
+				...state,
+				data: {
+					...state.data,
+					data: [result.data, ...(state.data?.data ?? [])]
+				} as ApiResponse<Note[]>
+			}))
+		} else {
+			alert(`Error ${response.statusText}`)
+		}
 		// await getAction()
 	}
 
@@ -169,6 +173,8 @@
 				}
 			})
 			// await getAction()
+		} else {
+			alert(`Error ${response.statusText}`)
 		}
 	}
 
@@ -263,8 +269,8 @@
 		<button on:click={getAction}>Refresh</button>
 		<button on:click={showAllDetailNote}>{isShowAllDetailNote ? 'Hide' : 'Show'} All Detail</button>
 		<select bind:value={filter.code}>
-			{#each listCode as code}
-				<option value="{code.value}">{code.name}</option>
+			{#each listCode.filter((el) => el.isHidden === false) as code}
+				<option value="{code.value}">{code.name} ({code.count})</option>
 			{/each}
 		</select>
 		<input bind:value={filter.search} type="search" name="search" placeholder="Search" />
