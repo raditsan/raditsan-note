@@ -28,6 +28,9 @@
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
 			enableLiveAutocompletion: true,
+			autoScrollEditorIntoView: true,
+			maxLines: 30,
+			minLines: 5
 		});
 		// setLanguageMode(language); // Set initial language mode
 
@@ -57,7 +60,7 @@
 <style>
     .editor {
         width: 100%;
-        height: 400px;
+        /*height: 400px;*/
     }
 </style>
 
