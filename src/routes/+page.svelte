@@ -4,7 +4,7 @@
 	import ButtonDelete from '$lib/components/ButtonDelete.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import type {ActionData } from './$types';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { getListCode } from '$lib/data/all_data';
 	import CodeHighlight from '$lib/components/CodeHighlight.svelte';
 	import AceEditor from '$lib/components/AceEditor.svelte';
@@ -14,7 +14,7 @@
 		code: "all",
 		search: ""
 	}
-	const listCode = getListCode()
+	let listCode = getListCode()
 	// const listCategory = getListCategory()
 	$: isLogin = form?.success || false
 	$: isShowAllDetailNote = false
@@ -47,15 +47,40 @@
 	// let storeDeleteNote = fetchDeleteNote.store;
 	let storeUpdateNote = fetchUpdateNote.store;
 	let storeGetDetailNote = fetchGetNoteDetail.store;
+	const unsubscribe = storeGetNote.subscribe((value) => {
+		rawNotes = value.data?.data ?? []
+		listCode = getListCode().map(el => {
+			return {
+				...el,
+				name: `${el.name} ${getCountNoteByLang(el.value)}`
+			}
+		})
+	})
 
+	onDestroy(unsubscribe)
 	let selectedNote: Note | null
 	$: if (selectedNote) {
 		noteValue = selectedNote
 	}
 
+	function getCountNoteByLang(lang: string) {
+		let value: string = "";
+		if (lang == "all") {
+			value = `(${rawNotes.length})`
+		} else {
+			const count = rawNotes.filter((el) =>  el.lang == lang).length
+			if (count > 0) {
+				value = `(${count})`
+			}
+		}
+		return value
+	}
+	
+	$: rawNotes = [] as Note[]
 	
 	// let notes: [Note] = data.notes
-	$: notes = (($storeGetNote.data?.data || []) as Note[]).filter(e => {
+	// $: notes = (($storeGetNote.data?.data || []) as Note[]).filter(e => {
+	$: notes = rawNotes.filter(e => {
 		const filterCode = filter.code.toLowerCase()
 		const lang = e.lang.toLowerCase()
 
@@ -242,7 +267,7 @@
 				<option value="{code.value}">{code.name}</option>
 			{/each}
 		</select>
-		<input bind:value={filter.search} type="search" name="search" placeholder="Search" /> {notes.length} Notes
+		<input bind:value={filter.search} type="search" name="search" placeholder="Search" />
 		{#if $storeGetNote.isLoading}
 			<p>Loading...</p>
 		{:else if $storeGetNote.errorMessage}
