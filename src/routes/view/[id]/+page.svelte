@@ -17,4 +17,4 @@
 	export let data: import('./$types').PageData;
 </script>
 
-<CodeHighlight note={data.note} />
+<CodeHighlight note={data.note} isDetail={true} />

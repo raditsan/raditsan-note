@@ -5,6 +5,7 @@
 	import { afterUpdate, onDestroy, onMount } from 'svelte';
 	import type { Ace } from 'ace-builds';
 
+	export let isDetail = false
 	export let readOnly = false
 	export let value: string = '';
 	export let language: string = "text";
@@ -24,13 +25,19 @@
 		editor.setValue(value, 1);
 		// editor.session.setMode(`ace/mode/html`);
 		editor.session.setUseWorker(true);
+		let addtionalOptions: {maxLines?: number, minLines?: number} = {
+			maxLines: 30,
+			minLines: 5
+		}
+		if (isDetail) {
+			addtionalOptions = {}
+		}
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
 			enableLiveAutocompletion: true,
 			autoScrollEditorIntoView: true,
-			maxLines: 30,
-			minLines: 5
+			...addtionalOptions
 		});
 		// setLanguageMode(language); // Set initial language mode
 

@@ -5,6 +5,7 @@ import type { Note } from '$lib/types/alltypes.js';
 // import { getHljsLanguage } from '$lib/data/all_data';
 import { page } from '$app/stores';
 import AceEditor from '$lib/components/AceEditor.svelte';
+export let isDetail = false;
 export let note: Note;
 const code = note.content;
 // const lang = getHljsLanguage(note.lang)
@@ -35,6 +36,7 @@ const code = note.content;
 	readOnly={true}
 	value={code}
 	language={note.lang}
+	isDetail={isDetail}
 />
 <!--{#if isAuto}-->
 <!--	<HighlightAuto {code} let:highlighted>-->
